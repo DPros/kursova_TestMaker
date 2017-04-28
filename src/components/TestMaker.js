@@ -12,7 +12,7 @@ class TestMaker extends React.Component {
         super(props);
         this.state = {
             testItem: this.props.testItem || {question: {type: this.props.questionTypes[0], answers: []}}
-        }
+        };
     };
 
     static propTypes = {
@@ -26,22 +26,23 @@ class TestMaker extends React.Component {
 
     render() {
         return (<div>
-            <QuestionTypeSelector value={this.state.testItem.question.type}
-                                  onChange={this.handleQuestionTypeChange}/>
-            <TestItem item={this.state.testItem}/>
-        </div>)
+            <QuestionTypeSelector
+                selected={this.state.testItem.question.type}
+                types={this.props.questionTypes}
+                onChange={this.handleQuestionTypeChange}
+            />
+            <TestItem onChange={this.handleChange} item={this.state.testItem}/>
+        </div>);
 
     }
 
-    handleAnswerQuantityChange = newValue => {
-        let state = this.state;
-        state.testItem.question.answerQuantity = newValue;
-        this.setState(state);
-    }
+    handleChange = newValue => {
+        this.setState(Object.assign(this.state, {testItem: newValue}));
+    };
 
     handleQuestionTypeChange = newValue => {
         let state = this.state;
-        state.testItem.question.quantity = newValue;
+        state.testItem.question.type = newValue;
         this.setState(state);
     }
 }
@@ -52,25 +53,43 @@ class TestItem extends React.Component {
         this.state = {
             testItem: this.props.item,
             nextKey: this.props.item.question.answers.length
-        }
+        };
     }
 
     static propTypes = {
         item: PropTypes.object.isRequired
     };
 
+    handleAnswerTextChange = (key, value) => {
+        if (key !== this.state.nextKey) {
+            this.state.question.answers.find(answer => answer.id === key).text = value;
+        } else {
+            let state = this.state;
+            state.question.answers.push({id: this.state.nextKey++, text: value});
+            this.setState(state);
+        }
+    };
+
+    handleAnswerQuantity = newValue => {
+
+    };
+
     render() {
+        let that = this;
         switch (this.state.testItem.question.type) {
             case "Regular":
                 return (<div>
-                    <AnswerQuantitySelector value={this.state.testItem.question.answerQuantity}
-                                            onChange={this.handleAnswerQuantityChange}/>
+                    <AnswerQuantitySelector
+                        value={this.state.testItem.question.answerQuantity}
+                        onChange={this.handleAnswerQuantityChange}
+                    />
                     {this.state.testItem.question.answers.map(function (i) {
-                        return <Answer answer="i"/>
+                        return <Answer key={i.id} answer={i} onChange={that.handleAnswerTextChange}/>;
                     })}
+                    <Answer key={this.state.nextKey} answer={{}} onChange={that.handleAnswerTextChange}/>
                 </div>);
             case "Reorder":
-                return <div>REORDER</div>
+                return <div>REORDER</div>;
         }
     }
 }
@@ -87,15 +106,15 @@ class QuestionTypeSelector extends React.Component {
     };
 
     handleChange = (e) => {
-        this.props.onChange(e.target.value)
+        this.props.onChange(e.target.value);
     };
 
     render() {
-        return <select onChange={this.handleChange}>
+        return (<select onChange={this.handleChange}>
             {this.props.types.map(function (option) {
-                return <option>{option}</option>
+                return <option>{option}</option>;
             })}
-        </select>
+        </select>);
     }
 }
 
@@ -111,18 +130,22 @@ class AnswerQuantitySelector extends React.Component {
     };
 
     handleChange = e => {
-        this.props.onChange(e.target.value)
-    }
+        this.props.onChange(e.target.value);
+    };
 
     render() {
         return (<div className="answer-quantity-selector">
-            <p>Answer: <span><input type="radio" name="answer" checked={!this.props.value}
-                                    onChange={this.handleChange}/>Single</span>
-                <span><input type="radio" name="answer" value="multiple" checked={this.props.value}
-                             onChange={this.handleChange}/>Multiple</span>
+            <p>Answer: <span><input
+                type="radio" name="answer" checked={!this.props.value}
+                onChange={this.handleChange}
+            />Single</span>
+                <span><input
+                    type="radio" name="answer" value="multiple" checked={this.props.value}
+                    onChange={this.handleChange}
+                />Multiple</span>
                 {this.props.value && <input type="number" onChange={this.handleChange}/>}
             </p>
-        </div>)
+        </div>);
     }
 }
 
@@ -134,26 +157,19 @@ class Answer extends React.Component {
 
     static propTypes = {
         answer: PropTypes.object.isRequired,
+        key: PropTypes.number.isRequired
     };
 
     handleKeyUp = e => {
-
+        this.props.onChange(this.props.key, e.target.value);
     };
 
     render() {
-        var that = this;
-        return (<div className="answers-list">
-            {Object.keys(this.props.answers).map(function (answer) {
-                return <p className="answer-container">
-                    <input type="text" value={answer.value} onKeyUp={that.handleKeyUp}/></p>
-            })}
-            <p className="answer-container"><input type="text" onKeyUp={this.handleKeyUp}/>
-            </p>
-        </div>)
+        return (<div>
+            <input type="text" value={this.props.answer.text} onKeyUp={this.handleKeyUp}/>
+        </div>);
     }
 }
-
-// const AnswerList = React.createClass({})
 
 const QuestionNumber = ({number}) => {
     return <span className="question-number">{number}</span>;
