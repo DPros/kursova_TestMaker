@@ -1,40 +1,69 @@
 import React from "react";
 import PropTypes from "prop-types";
+import TestItem from "./TestItem";
+import QuestionTypeSelector from "./QuestionTypeSelector";
 
 import "../assets/stylesheets/base.scss";
 
 
 class TestMaker extends React.Component {
 
-    answersList;
-
     constructor(props) {
         super(props);
         this.state = {
-            testItem: this.props.testItem || {question: {type: this.props.questionTypes[0], answers: []}}
+            testItem: this.props.testItem || this.getEmptyTestItem()
         };
     };
 
     static propTypes = {
         testItem: React.PropTypes.object,
         questionTypes: React.PropTypes.array,
+        mode: React.PropTypes.string,
+        saveCallback: React.PropTypes.func.isRequired
     };
 
     static defaultProps = {
-        questionTypes: ["Regular", "Reorder"]
+        questionTypes: ["Regular Test", "Reorder", "Input Field"],
+        mode: "test"
     };
 
     render() {
-        return (<div>
-            <QuestionTypeSelector
+        return (<div className="test-maker">
+            {this.props.mode !== "test" && <div><QuestionTypeSelector
                 selected={this.state.testItem.question.type}
                 types={this.props.questionTypes}
                 onChange={this.handleQuestionTypeChange}
-            />
-            <TestItem onChange={this.handleChange} item={this.state.testItem}/>
+            /></div>}
+            <div style={{display: "inline-block", width: "48%"}}>
+                <TestItem mode="edit" onChange={this.handleChange} item={this.state.testItem}/>
+            </div>
+            <div style={{display: "inline-block", width: "48%"}}>
+                <TestItem style={{display: "inline-block", width: "40%"}} mode="test" onChange={this.handleChange}
+                          item={this.state.testItem}/>
+            </div>
+            <div>
+                <button onClick={this.handleSave}>Save and Keep Inputs</button>
+                <button onClick={this.handleSaveAndClear}>Save and Clear Inputs</button>
+            </div>
         </div>);
 
     }
+
+    getEmptyTestItem() {
+        return {
+            question: {type: this.props.questionTypes[0], variants: [], question: {text: ''}},
+            answer: new Set()
+        }
+    }
+
+    handleSave = () => {
+        this.props.saveCallback([this.state.testItem.question, this.state.testItem.answer])
+    };
+
+    handleSaveAndClear = () => {
+        this.handleSave();
+        this.setState(Object.assign(this.state, {testItem: this.getEmptyTestItem()}))
+    };
 
     handleChange = newValue => {
         this.setState(Object.assign(this.state, {testItem: newValue}));
@@ -44,130 +73,6 @@ class TestMaker extends React.Component {
         let state = this.state;
         state.testItem.question.type = newValue;
         this.setState(state);
-    }
-}
-
-class TestItem extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            testItem: this.props.item,
-            nextKey: this.props.item.question.answers.length
-        };
-    }
-
-    static propTypes = {
-        item: PropTypes.object.isRequired
-    };
-
-    handleAnswerTextChange = (key, value) => {
-        if (key !== this.state.nextKey) {
-            this.state.question.answers.find(answer => answer.id === key).text = value;
-        } else {
-            let state = this.state;
-            state.question.answers.push({id: this.state.nextKey++, text: value});
-            this.setState(state);
-        }
-    };
-
-    handleAnswerQuantity = newValue => {
-
-    };
-
-    render() {
-        let that = this;
-        switch (this.state.testItem.question.type) {
-            case "Regular":
-                return (<div>
-                    <AnswerQuantitySelector
-                        value={this.state.testItem.question.answerQuantity}
-                        onChange={this.handleAnswerQuantityChange}
-                    />
-                    {this.state.testItem.question.answers.map(function (i) {
-                        return <Answer key={i.id} answer={i} onChange={that.handleAnswerTextChange}/>;
-                    })}
-                    <Answer key={this.state.nextKey} answer={{}} onChange={that.handleAnswerTextChange}/>
-                </div>);
-            case "Reorder":
-                return <div>REORDER</div>;
-        }
-    }
-}
-
-class QuestionTypeSelector extends React.Component {
-
-    constructor(props) {
-        super(props);
-    }
-
-    static propTypes = {
-        types: PropTypes.array.isRequired,
-        selected: PropTypes.string.isRequired,
-    };
-
-    handleChange = (e) => {
-        this.props.onChange(e.target.value);
-    };
-
-    render() {
-        return (<select onChange={this.handleChange}>
-            {this.props.types.map(function (option) {
-                return <option>{option}</option>;
-            })}
-        </select>);
-    }
-}
-
-class AnswerQuantitySelector extends React.Component {
-
-    constructor(props) {
-        super(props);
-    }
-
-    static propTypes = {
-        value: PropTypes.string,
-        onChange: PropTypes.func.isRequired
-    };
-
-    handleChange = e => {
-        this.props.onChange(e.target.value);
-    };
-
-    render() {
-        return (<div className="answer-quantity-selector">
-            <p>Answer: <span><input
-                type="radio" name="answer" checked={!this.props.value}
-                onChange={this.handleChange}
-            />Single</span>
-                <span><input
-                    type="radio" name="answer" value="multiple" checked={this.props.value}
-                    onChange={this.handleChange}
-                />Multiple</span>
-                {this.props.value && <input type="number" onChange={this.handleChange}/>}
-            </p>
-        </div>);
-    }
-}
-
-class Answer extends React.Component {
-
-    constructor(props) {
-        super(props);
-    }
-
-    static propTypes = {
-        answer: PropTypes.object.isRequired,
-        key: PropTypes.number.isRequired
-    };
-
-    handleKeyUp = e => {
-        this.props.onChange(this.props.key, e.target.value);
-    };
-
-    render() {
-        return (<div>
-            <input type="text" value={this.props.answer.text} onKeyUp={this.handleKeyUp}/>
-        </div>);
     }
 }
 
