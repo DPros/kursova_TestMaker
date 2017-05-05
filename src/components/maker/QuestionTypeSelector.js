@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import TestItem from "./TestItem";
+import TestItem from "./Constructor";
 
-import "../assets/stylesheets/base.scss";
+import "../../assets/stylesheets/base.scss";
 
 class QuestionTypeSelector extends React.Component {
 

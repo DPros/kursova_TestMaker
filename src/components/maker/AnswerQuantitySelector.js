@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
-import TestItem from "./TestItem";
+import TestItem from "./Constructor";
 import QuestionTypeSelector from "./QuestionTypeSelector";
 
-import "../assets/stylesheets/base.scss";
+import "../../assets/stylesheets/base.scss";
 
 class AnswerQuantitySelector extends React.Component {
 
@@ -23,11 +23,11 @@ class AnswerQuantitySelector extends React.Component {
     render() {
         return (<div className="answer-quantity-selector">
             <p>Answer: <span><input
-                type="radio" name={"answer" + this.props.mode} value="" checked={!this.props.value}
+                type="radio" name={"value" + this.props.mode} value="" checked={!this.props.value}
                 onChange={this.handleChange}
             />Single</span>
                 <span><input
-                    type="radio" name={"answer" + this.props.mode} value="multiple" checked={this.props.value}
+                    type="radio" name={"value" + this.props.mode} value="multiple" checked={this.props.value}
                     onChange={this.handleChange}
                 />Multiple</span>
                 {this.props.value && <input type="number" onChange={this.handleChange}/>}

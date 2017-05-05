@@ -1,6 +1,6 @@
 import React from "react";
 
-import "../assets/stylesheets/base.scss";
+import "../../assets/stylesheets/base.scss";
 
 class Question extends React.Component {
 
