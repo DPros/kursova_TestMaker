@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import Constructor from "./Constructor";
 import Question from "./Question";
 import QuestionTypeSelector from "./QuestionTypeSelector";
-import TestItem from '../TestItem';
+import TestItem from "../TestItem";
 
 import "../../assets/stylesheets/base.scss";
 
@@ -49,11 +49,14 @@ class TestMaker extends React.Component {
     };
 
     handleSave = () => {
+        if (this.state.testItem.type === "Reorder") {
+
+        }
         this.props.saveCallback(this.state.testItem);
     };
 
     handleSaveAndClear = () => {
-        this.props.saveCallback(this.state.testItem);
+        this.handleSave();
         this.setState({testItem: new TestItem(this.state.testItem.type)});
     };
 

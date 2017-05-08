@@ -21,10 +21,10 @@ class Question extends React.Component {
     };
 
     render() {
-        return (<div className="question">
-            <textarea value={this.props.question.text} onChange={this.handleTextChange}></textarea>
+        return (<div style={{margin: 20}} className="question">
+            <textarea style={{width: "100%"}} rows="5" value={this.props.question.text} onChange={this.handleTextChange}></textarea>
             <input type="text" placeholder="link to image" onChange={this.handleImgChange}/><br/>
-        </div>)
+        </div>);
     }
 }
 

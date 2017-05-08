@@ -15,28 +15,19 @@ class Variant extends React.Component {
 
     static defaultProps = {
         checked: false,
-        visibility: "visible"
     };
 
     handleTextChange = e => {
-        let item = this.props.value;
-        item.text = e.target.value;
-        this.props.onChange(item);
+        this.props.onChange(Object.assign(this.props.value, {text: e.target.value}));
     };
 
     handleAnswerChange = e => {
-        let item = this.props.value;
-        item.isCorrect = e.target.checked;
-        this.props.onChange(item);
-    };
-
-    handleRemove = () => {
-        this.props.onRemove(this.props.value.id)
+        this.props.onChange(Object.assign(this.props.value, {isCorrect: e.target.checked}));
     };
 
     render() {
         return (<div className="variant">
-            <input type={this.props.trigger} tabIndex="-1" name={this.props.mode} onChange={this.handleAnswerChange} style={{visibility: this.props.visibility}}
+            <input type={this.props.trigger} name="answer" onChange={this.handleAnswerChange}
                    checked={this.props.checked}/>
             <input type="text" value={this.props.value.text} onChange={this.handleTextChange}
                    autoFocus={this.props.value.text}/>

@@ -1,9 +1,10 @@
 import React from 'react';
 import { render } from 'react-dom';
 import TestMaker from './components/maker/TestMaker';
+import TestTaker from './components/taker/TestTaker';
 
 let saveCallback = e => {
-    console.log(e)
+    render(<TestTaker testItem={e.toTest()} />, document.getElementById('taker'));
 };
 
-render(<TestMaker saveCallback={saveCallback} mode="edit"/>, document.getElementById('root'));
+render(<TestMaker saveCallback={saveCallback} />, document.getElementById('maker'));

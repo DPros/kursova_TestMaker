@@ -23,11 +23,11 @@ class AnswerQuantitySelector extends React.Component {
     render() {
         return (<div className="answer-quantity-selector">
             <p>Answer: <span><input
-                type="radio" name={"value" + this.props.mode} value="" checked={!this.props.value}
+                type="radio" name="answerQuantity" value="" checked={!this.props.value}
                 onChange={this.handleChange}
             />Single</span>
                 <span><input
-                    type="radio" name={"value" + this.props.mode} value="multiple" checked={this.props.value}
+                    type="radio" name="answerQuantity" value="multiple" checked={this.props.value}
                     onChange={this.handleChange}
                 />Multiple</span>
                 {this.props.value && <input type="number" onChange={this.handleChange}/>}

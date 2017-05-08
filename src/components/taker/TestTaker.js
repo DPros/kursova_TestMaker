@@ -1,61 +1,36 @@
 import React from "react";
 import PropTypes from "prop-types";
-import TestItem from "../maker/Constructor";
-import QuestionTypeSelector from "../maker/QuestionTypeSelector";
+import Question from "./Question";
+import Answer from "./Answer";
 
 import "../../assets/stylesheets/base.scss";
 
 
-class TestMaker extends React.Component {
+class TestTaker extends React.Component {
+
+    constructor(props) {
+        super(props);
+    }
 
     static propTypes = {
-        testItem: React.PropTypes.object.isRequired,
-        next: React.PropTypes.func.isRequired
+        testItem: PropTypes.object.isRequired,
+    };
+
+    handleAnswerChange = newAnswer => {
+        this.setState({answer: newAnswer});
+    };
+
+    handleNext = () => {
+        console.log(this.state.answer);
     };
 
     render() {
         return (<div className="test-taker">
-            <div style={{display: "inline-block", width: "48%"}}>
-                <TestItem
-            </div>
-            <div>
-                <button onClick={this.handleSave}>Save and Keep Inputs</button>
-                <button onClick={this.handleSaveAndClear}>Save and Clear Inputs</button>
-            </div>
+            <Question question={this.props.testItem.question}/>
+            <Answer item={this.props.testItem} onChange={this.handleAnswerChange}/>
+            <button onClick={this.handleNext}>Next</button>
         </div>);
-
-    }
-
-    getEmptyTestItem() {
-        return {
-            question: {type: this.props.questionTypes[0], variants: [], question: {text: ''}},
-            answer: new Set()
-        }
-    }
-
-    handleSave = () => {
-        this.props.saveCallback([this.state.testItem.question, this.state.testItem.value])
-    };
-
-    handleSaveAndClear = () => {
-        this.handleSave();
-        this.setState(Object.assign(this.state, {testItem: this.getEmptyTestItem()}))
-    };
-
-    handleChange = newValue => {
-        this.setState(Object.assign(this.state, {testItem: newValue}));
-    };
-
-    handleQuestionTypeChange = newValue => {
-        let state = this.state;
-        state.testItem.question.type = newValue;
-        this.setState(state);
     }
 }
 
-const QuestionNumber = ({number}) => {
-    return <span className="question-number">{number}</span>;
-};
-QuestionNumber.propTypes = {number: PropTypes.number.isRequired};
-
-export default TestMaker;
+export default TestTaker;
