@@ -6,7 +6,9 @@ class TestItem {
     constructor(type) {
         this.type = type;
         this.variants = [];
-        this.question = {};
+        this.question = {text:''};
         this.props = {};
     }
 }
+
+export default TestItem

@@ -1,15 +1,15 @@
 import React from "react";
 import AnswerQuantitySelector from "./AnswerQuantitySelector";
-import Question from "./Question";
 import DragSortableList from 'react-drag-sortable';
+import Variant from "./Variant";
 
 import "../../assets/stylesheets/base.scss";
 
-class TestItem extends React.Component {
+class Constructor extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            nextKey: this.props.item.variants.length
+            nextKey: this.props.item.variants.length ? this.props.item.variants[this.props.item.variants].id + 1 : 1
         };
     }
 
@@ -18,12 +18,12 @@ class TestItem extends React.Component {
         onChange: React.PropTypes.func.isRequired,
     };
 
-    handleAnswerTextChange = (key, value) => {
+    handleVariantChange = newVariant => {
         let item = this.props.item;
-        if (key !== undefined) {
-            item.variants.find(answer => answer.id === key).text = value;
+        if (newVariant.id) {
+            Object.assign(item.variants.find(variant => variant.id === newVariant.id), newVariant);
         } else {
-            item.variants.push({id: this.state.nextKey++, text: value});
+            item.variants.push(Object.assign(newVariant, {id: this.state.nextKey++}));
         }
         this.props.onChange(item);
     };
@@ -34,43 +34,17 @@ class TestItem extends React.Component {
         this.props.onChange(item);
     };
 
-    handleAnswerChange = (answerId, checked) => {
+    handleRemoveVariant = id => {
         let item = this.props.item;
-        if (item.question.answerQuantity) {
-            if (checked) {
-                item.value.add(answerId)
-            } else {
-                item.value.delete(answerId)
-            }
-        } else {
-            item.value.clear();
-            item.value.add(answerId);
-        }
-        this.props.onChange(item);
-    };
-
-    handleRemoveAnswer = answerId => {
-        let item = this.props.item;
-        item.question.variants = item.question.variants.filter(function (v) {
-            return v.id !== answerId
+        item.variants = item.variants.filter(function (v) {
+            return v.id !== id
         });
-        item.value.delete(answerId);
         this.props.onChange(item);
-    };
-
-    handleQuestionChange = updatedQuestion => {
-        let item = this.props.item;
-        item.question.question = updatedQuestion;
-        this.props.onChange(item);
-    };
-
-    handleOpenAnswerChange = e => {
-        // if()
     };
 
     render() {
         let that = this;
-        switch (this.props.item.question.type) {
+        switch (this.props.item.type) {
             case "Regular Test":
                 return (<div>
                     <AnswerQuantitySelector
@@ -78,41 +52,29 @@ class TestItem extends React.Component {
                         onChange={this.handleAnswerQuantityChange}
                         mode={this.props.mode}
                     />
-                    <Question question={this.props.item.question.question} mode={this.props.mode}
-                              onChange={this.handleQuestionChange}/>
-                    {this.props.item.question.variants.map(function (i) {
-                        return <Variant key={i.id} answer={i}
-                                        checked={that.props.mode === 'edit' && that.props.item.value.has(i.id)}
+                    {this.props.item.variants.map(function (i) {
+                        return <Variant key={i.id} value={i}
+                                        checked={i.isCorrect}
                                         trigger={that.props.item.question.answerQuantity ? 'checkbox' : 'radio'}
-                                        onTextChange={that.handleAnswerTextChange} onRemove={that.handleRemoveAnswer}
-                                        onAnswerChange={that.handleAnswerChange} mode={that.props.mode}/>;
+                                        onChange={that.handleVariantChange} onRemove={that.handleRemoveVariant}/>;
                     })}
-                    {this.props.mode === 'edit' &&
-                    <Variant mode={this.props.mode} key={this.state.nextKey} onTextChange={that.handleAnswerTextChange}
-                             trigger={this.props.item.question.answerQuantity ? 'checkbox' : 'radio'}/>}
+                    <Variant value={{}} key={this.state.nextKey} onChange={that.handleVariantChange}
+                             trigger={this.props.item.question.answerQuantity ? 'checkbox' : 'radio'}/>
                 </div>);
             case "Reorder":
-                let list = this.props.item.question.variants.map(function (v) {
+                let list = this.props.item.variants.map(function (v) {
                     return {
-                        content: <Variant mode={that.props.mode} trigger="hidden" key={v.id} answer={v}
-                                          onTextChange={that.handleAnswerTextChange}/>
+                        content: <Variant mode={that.props.mode} trigger="hidden" key={v.id} value={v}
+                                          onChange={that.handleVariantChange} onRemove={that.handleRemoveVariant}/>
                     }
                 });
-                if (this.props.mode === "edit") {
-                    list.push({
-                        content: <Variant trigger="hidden" mode="edit" onTextChange={that.handleAnswerTextChange}
-                                          key={that.state.nextKey}/>
-                    })
-                }
-                return (<div>
-                    <Question question={this.props.item.question.question} mode={this.props.mode}
-                              onChange={this.handleQuestionChange}/>
-                    <DragSortableList items={list}/>
-                </div>);
+                list.push({
+                    content: <Variant trigger="hidden" mode="edit" value={{}} onChange={that.handleVariantChange}
+                                      key={that.state.nextKey} onRemove={that.handleRemoveVariant}/>
+                });
+                return <DragSortableList items={list}/>;
             case "Input Field":
                 return (<div>
-                    <Question question={this.props.item.question.question} mode={this.props.mode}
-                              onChange={this.handleQuestionChange}/>
                     {this.props.mode === "edit" && this.props.item.value.map(function (v, i) {
                         return (<div><input type="text" value={v} key={i} data-index={i}
                                             onChange={that.handleOpenAnswerChange}/>
@@ -126,4 +88,4 @@ class TestItem extends React.Component {
     }
 }
 
-export default TestItem;
+export default Constructor;

@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Constructor from "./Constructor";
+import Question from "./Question";
 import QuestionTypeSelector from "./QuestionTypeSelector";
 import TestItem from '../TestItem';
 
@@ -29,9 +30,10 @@ class TestMaker extends React.Component {
     render() {
         return (<div>
             <QuestionTypeSelector
-                selected={this.state.type}
+                selected={this.state.testItem.type}
                 types={this.props.questionTypes}
                 onChange={this.handleQuestionTypeChange}/>
+            <Question question={this.state.testItem.question} onChange={this.handleQuestionChange}/>
             <Constructor onChange={this.handleChange} item={this.state.testItem}/>
             <div style={{display: 'flex', justifyContent: "space-around"}}>
                 <button onClick={this.handleSave}>Save and Keep Inputs</button>
@@ -40,6 +42,11 @@ class TestMaker extends React.Component {
         </div>);
 
     }
+
+    handleQuestionChange = updatedQuestion => {
+        this.state.testItem.question = updatedQuestion;
+        this.forceUpdate();
+    };
 
     handleSave = () => {
         this.props.saveCallback(this.state.testItem);
@@ -56,7 +63,7 @@ class TestMaker extends React.Component {
 
     handleQuestionTypeChange = newValue => {
         let state = this.state;
-        state.testItem.question.type = newValue;
+        state.testItem.type = newValue;
         this.setState(state);
     };
 }
