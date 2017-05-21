@@ -7,3 +7,13 @@ h1 {
   border: 1px solid black;
   padding: 10px;
 }
+
+div[role=presentation].mm-popup--visible {
+  position: absolute;
+  background: white;
+  width: 80%;
+  margin-left: 9%;
+  border: 3px solid black;
+  padding: 1%;
+  border-radius: 10px;
+}

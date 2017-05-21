@@ -26,12 +26,13 @@ class Variant extends React.Component {
     };
 
     render() {
+        let {trigger, checked, value: {text}={text: ''}} = this.props;
         return (<div className="variant">
-            <input type={this.props.trigger} name="answer" onChange={this.handleAnswerChange}
-                   checked={this.props.checked}/>
-            <input type="text" value={this.props.value.text} onChange={this.handleTextChange}
-                   autoFocus={this.props.value.text}/>
-            {this.props.value.text && <button onClick={this.handleRemove} tabIndex="-1" type="button">Remove</button>}
+            <input type={trigger} name="answer" onChange={this.handleAnswerChange}
+                   checked={checked}/>
+            <input type="text" value={text} onChange={this.handleTextChange}
+                   autoFocus={text}/>
+            {text && <button onClick={this.handleRemove} tabIndex="-1" type="button">Remove</button>}
         </div>);
     }
 }
